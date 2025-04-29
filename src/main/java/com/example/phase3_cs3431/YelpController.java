@@ -4,6 +4,8 @@ import io.github.cdimascio.dotenv.Dotenv;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 
 import java.sql.*;
@@ -29,9 +31,9 @@ public class YelpController {
     private void updateStates() {
         ObservableList<String> states = FXCollections.observableArrayList();
         String stateQuery = """
-        SELECT DISTINCT state
-        FROM business
-        ORDER BY state
+            SELECT DISTINCT state
+            FROM business
+            ORDER BY state
         """;
         try {
             connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
@@ -47,6 +49,10 @@ public class YelpController {
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+
+        stateComboBox.setItems(states);
+
+        try {connection.close();} catch (SQLException ex) {}
     }
 
 }
