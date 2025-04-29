@@ -24,7 +24,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <VBox prefHeight="200.0" prefWidth="200.0" spacing="10.0">
+                        <VBox prefHeight="546.0" prefWidth="200.0" spacing="10.0">
                            <children>
                               <Label fx:id="location_label" styleClass="subtitle-text" text="Location">
                                  <VBox.margin>
@@ -48,7 +48,7 @@
                                  <VBox.margin>
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin></Label>
-                              <ListView fx:id="categoryList" prefHeight="200.0" prefWidth="200.0">
+                              <ListView fx:id="categoryList" prefHeight="359.0" prefWidth="192.0">
                                  <padding>
                                     <Insets left="4.0" right="4.0" />
                                  </padding>
