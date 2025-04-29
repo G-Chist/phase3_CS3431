@@ -20,16 +20,24 @@ public class YelpController {
     @FXML private Label searchText;
     @FXML private ComboBox<String> stateComboBox;
     @FXML private Button filterButton;
-    @FXML private ListView<String> categoriesList;
+    @FXML private ListView<String> categoryList;
     @FXML private Button searchButton;
     @FXML private TableView<Business> businessTable;
 
     @FXML void initialize() {
         updateStates();
+        categoryList.setItems(FXCollections.observableArrayList());
+        stateComboBox.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldState, newState) -> {
+                    if (newState != null)
+                        updateCategories(newState);
+                });
     }
 
-    private void updateCategories() {
-        String state = stateComboBox.getSelectionModel().getSelectedItem();
+
+    private void updateCategories(String state) {
+        // String state = stateComboBox.getSelectionModel().getSelectedItem();
         if (state == null) {
             return;
         }
@@ -53,11 +61,13 @@ public class YelpController {
             ps.setString(1, state);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                categories.add(rs.getString("category_name"));
+                categories.add(rs.getString("categoryName"));
             }
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+
+        categoryList.setItems(categories);
     }
 
 
