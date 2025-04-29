@@ -26,7 +26,7 @@
                      <children>
                         <VBox prefHeight="200.0" prefWidth="200.0" spacing="10.0">
                            <children>
-                              <Label id="location_label" styleClass="subtitile-text" text="Location">
+                              <Label id="location_label" styleClass="subtitle-text" text="Location">
                                  <VBox.margin>
                                     <Insets left="4.0" top="10.0" />
                                  </VBox.margin></Label>
