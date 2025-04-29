@@ -26,6 +26,7 @@ public class YelpController {
 
     @FXML void initialize() {
         updateStates();
+        categoryList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         categoryList.setItems(FXCollections.observableArrayList());
         stateComboBox.getSelectionModel()
                 .selectedItemProperty()
@@ -33,6 +34,7 @@ public class YelpController {
                     if (newState != null)
                         updateCategories(newState);
                 });
+        filterButton.setOnAction(event->{updateCategories(stateComboBox.getSelectionModel().getSelectedItem());});
     }
 
 
