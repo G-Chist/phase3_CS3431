@@ -7,8 +7,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class YelpController {
     private static final Dotenv dotenv = Dotenv.load();
@@ -23,8 +26,16 @@ public class YelpController {
     @FXML private ListView<String> categoryList;
     @FXML private Button searchButton;
     @FXML private TableView<Business> businessTable;
+    @FXML private TableColumn<Business, String> nameColumn;
+    @FXML private TableColumn<Business, String> addressColumn;
+    @FXML private TableColumn<Business, String> cityColumn;
 
     @FXML void initialize() {
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+        cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
+
+
         updateStates();
         categoryList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         categoryList.setItems(FXCollections.observableArrayList());
@@ -35,7 +46,67 @@ public class YelpController {
                         updateCategories(newState);
                 });
         filterButton.setOnAction(event->{updateCategories(stateComboBox.getSelectionModel().getSelectedItem());});
+        searchButton.setOnAction(event->{searchBusinesses();});
     }
+
+    private void searchBusinesses(){
+        String state = stateComboBox.getSelectionModel().getSelectedItem();
+        List<String> cats = new ArrayList<>(categoryList.getSelectionModel().getSelectedItems());
+        List<Business> results = queryBusinesses (state, cats);
+        businessTable.setItems (FXCollections.observableArrayList (results));
+    }
+
+    private List<Business> queryBusinesses(String state, List<String> categories) {
+        List<Business> res = new ArrayList<>();
+
+        String businessQuery = """
+        SELECT business_id, name, street_address, city, latitude, longitude, starRating, num_tip
+        FROM business
+        WHERE business.state = ?
+    """;
+
+        // You can iterate over all selected categories as follows. You should add more conditions to your query dynamically.
+    /*
+    for (String cat : categories) {
+        businessQuery = businessQuery.concat(" AND ....");
+    }
+    */
+        businessQuery = businessQuery.concat(" ORDER BY name");
+
+        try {
+            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(businessQuery)) {
+            int count = 1;
+            ps.setString(count, state);
+            count++;
+        /*
+        for (String cat: categories){
+            ps.setString(count, cat);
+            count++;
+        }
+        */
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                res.add(new Business(
+                        rs.getString("business_id"),
+                        rs.getString("name"),
+                        rs.getString("street_address"),
+                        rs.getString("city")
+                ));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+
+        return res;
+    }
+
 
 
     private void updateCategories(String state) {
