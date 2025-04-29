@@ -2,5 +2,10 @@
     -fx-font-family: "Roboto Light";
     -fx-font-size: 14px;
     -fx-background-color: #FFFFFF;
+}
 
+.subtitle-text {
+    -fx-font-family: "Roboto Light";
+    -fx-font-size: 14px;
+    -fx-background-color: #FFFFFF;
 }

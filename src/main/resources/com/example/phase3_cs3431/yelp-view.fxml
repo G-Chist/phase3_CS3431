@@ -20,13 +20,13 @@
    <children>
       <BorderPane prefHeight="960.0" prefWidth="1280.0">
          <left>
-            <ScrollPane prefHeight="200.0" prefWidth="200.0">
+            <ScrollPane prefHeight="920.0" prefWidth="218.0">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                      <children>
                         <VBox prefHeight="200.0" prefWidth="200.0" spacing="10.0">
                            <children>
-                              <Label id="location_label" text="Location">
+                              <Label id="location_label" styleClass="subtitile-text" text="Location">
                                  <VBox.margin>
                                     <Insets left="4.0" top="10.0" />
                                  </VBox.margin></Label>
@@ -44,7 +44,7 @@
                                  <VBox.margin>
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin></Button>
-                              <Label id="categories_label" text="Categories">
+                              <Label id="categories_label" styleClass="subtitle-text" text="Categories">
                                  <VBox.margin>
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin></Label>
@@ -74,21 +74,27 @@
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Label id="SearchResultsLabel" prefHeight="18.0" prefWidth="108.0" text="Search Results">
+                        <Label id="search_results_label" prefHeight="18.0" prefWidth="108.0" styleClass="subtitle-text" text="Search Results">
                            <HBox.margin>
                               <Insets left="10.0" top="10.0" />
                            </HBox.margin>
                         </Label>
                      </children>
                   </HBox>
-                  <TableView id="tableView" prefHeight="442.0" prefWidth="1040.0">
+                  <TableView id="table_view" prefHeight="442.0" prefWidth="1040.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="Name" />
                       <TableColumn prefWidth="75.0" text="Address" />
                         <TableColumn prefWidth="75.0" text="City" />
                     </columns>
+                     <VBox.margin>
+                        <Insets left="4.0" right="4.0" />
+                     </VBox.margin>
                   </TableView>
-                  <Button id="yelpButton" mnemonicParsing="false" text="Yelp" />
+                  <Button id="yelp_button" mnemonicParsing="false" text="Yelp">
+                     <VBox.margin>
+                        <Insets left="4.0" right="4.0" />
+                     </VBox.margin></Button>
                </children>
             </VBox>
          </center>
