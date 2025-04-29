@@ -24,14 +24,44 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <VBox prefHeight="200.0" prefWidth="200.0">
+                        <VBox prefHeight="200.0" prefWidth="200.0" spacing="10.0">
                            <children>
-                              <Label id="location_label" text="Location" />
-                              <ComboBox id="selection_state" prefHeight="26.0" prefWidth="222.0" promptText="Select a State" />
-                              <Button id="apply_location" mnemonicParsing="false" prefHeight="26.0" prefWidth="213.0" text="Apply Location Filter" />
-                              <Label id="categories_label" text="Categories" />
-                              <ListView id="listview_categories" prefHeight="200.0" prefWidth="200.0" />
-                              <Button id="search_button" mnemonicParsing="false" prefHeight="26.0" prefWidth="206.0" text="Search" />
+                              <Label id="location_label" text="Location">
+                                 <VBox.margin>
+                                    <Insets left="4.0" top="10.0" />
+                                 </VBox.margin></Label>
+                              <ComboBox id="selection_state" prefHeight="26.0" prefWidth="222.0" promptText="Select a State">
+                                 <padding>
+                                    <Insets left="4.0" right="4.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets left="4.0" right="4.0" />
+                                 </VBox.margin></ComboBox>
+                              <Button id="apply_location" mnemonicParsing="false" prefHeight="26.0" prefWidth="213.0" text="Apply Location Filter">
+                                 <padding>
+                                    <Insets left="3.0" right="3.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets left="4.0" right="4.0" />
+                                 </VBox.margin></Button>
+                              <Label id="categories_label" text="Categories">
+                                 <VBox.margin>
+                                    <Insets left="4.0" right="4.0" />
+                                 </VBox.margin></Label>
+                              <ListView id="listview_categories" prefHeight="200.0" prefWidth="200.0">
+                                 <padding>
+                                    <Insets left="4.0" right="4.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets left="4.0" right="4.0" />
+                                 </VBox.margin></ListView>
+                              <Button id="search_button" mnemonicParsing="false" prefHeight="26.0" prefWidth="206.0" text="Search">
+                                 <padding>
+                                    <Insets left="4.0" right="4.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets left="4.0" right="4.0" />
+                                 </VBox.margin></Button>
                            </children>
                         </VBox>
                      </children>
@@ -40,14 +70,18 @@
             </ScrollPane>
          </left>
          <center>
-            <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <VBox prefHeight="200.0" prefWidth="100.0" spacing="5.0" BorderPane.alignment="CENTER">
                <children>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Label id="SearchResultsLabel" prefHeight="18.0" prefWidth="108.0" text="Search Results" />
+                        <Label id="SearchResultsLabel" prefHeight="18.0" prefWidth="108.0" text="Search Results">
+                           <HBox.margin>
+                              <Insets left="10.0" top="10.0" />
+                           </HBox.margin>
+                        </Label>
                      </children>
                   </HBox>
-                  <TableView id="tableView" prefHeight="200.0" prefWidth="200.0">
+                  <TableView id="tableView" prefHeight="442.0" prefWidth="1040.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="Name" />
                       <TableColumn prefWidth="75.0" text="Address" />
