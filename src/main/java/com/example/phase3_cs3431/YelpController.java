@@ -28,6 +28,39 @@ public class YelpController {
         updateStates();
     }
 
+    private void updateCategories() {
+        String state = stateComboBox.getSelectionModel().getSelectedItem();
+        if (state == null) {
+            return;
+        }
+
+        ObservableList<String> categories = FXCollections.observableArrayList();
+        String stateQuery = """
+            SELECT DISTINCT Category.categoryName
+            FROM Category
+            JOIN business ON business.business_id = Category.business_id
+            WHERE business.state = ?
+            ORDER BY Category.categoryName
+        """;
+
+        try {
+            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(stateQuery)) {
+            ps.setString(1, state);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                categories.add(rs.getString("category_name"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
     private void updateStates() {
         ObservableList<String> states = FXCollections.observableArrayList();
         String stateQuery = """
