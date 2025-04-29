@@ -10,6 +10,8 @@ module com.example.phase3_cs3431 {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires io.github.cdimascio.dotenv.java;
+    requires java.sql;
 
     opens com.example.phase3_cs3431 to javafx.fxml;
     exports com.example.phase3_cs3431;

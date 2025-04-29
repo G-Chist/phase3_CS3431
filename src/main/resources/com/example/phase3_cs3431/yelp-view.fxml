@@ -30,14 +30,14 @@
                                  <VBox.margin>
                                     <Insets left="4.0" top="10.0" />
                                  </VBox.margin></Label>
-                              <ComboBox id="selection_state" prefHeight="26.0" prefWidth="222.0" promptText="Select a State">
+                              <ComboBox id="stateComboBox" prefHeight="26.0" prefWidth="222.0" promptText="Select a State">
                                  <padding>
                                     <Insets left="4.0" right="4.0" />
                                  </padding>
                                  <VBox.margin>
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin></ComboBox>
-                              <Button id="apply_location" mnemonicParsing="false" prefHeight="26.0" prefWidth="213.0" text="Apply Location Filter">
+                              <Button id="filterButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="213.0" text="Apply Location Filter">
                                  <padding>
                                     <Insets left="3.0" right="3.0" />
                                  </padding>
@@ -48,14 +48,14 @@
                                  <VBox.margin>
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin></Label>
-                              <ListView id="listview_categories" prefHeight="200.0" prefWidth="200.0">
+                              <ListView id="categoryList" prefHeight="200.0" prefWidth="200.0">
                                  <padding>
                                     <Insets left="4.0" right="4.0" />
                                  </padding>
                                  <VBox.margin>
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin></ListView>
-                              <Button id="search_button" mnemonicParsing="false" prefHeight="26.0" prefWidth="206.0" text="Search">
+                              <Button id="searchButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="206.0" text="Search">
                                  <padding>
                                     <Insets left="4.0" right="4.0" />
                                  </padding>
@@ -81,7 +81,7 @@
                         </Label>
                      </children>
                   </HBox>
-                  <TableView id="table_view" prefHeight="442.0" prefWidth="1040.0">
+                  <TableView id="businessTable" prefHeight="442.0" prefWidth="1040.0">
                     <columns>
                       <TableColumn prefWidth="75.0" text="Name" />
                       <TableColumn prefWidth="75.0" text="Address" />

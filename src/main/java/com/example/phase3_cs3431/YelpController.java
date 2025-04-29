@@ -1,14 +1,52 @@
 package com.example.phase3_cs3431;
 
+import io.github.cdimascio.dotenv.Dotenv;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+
+import java.sql.*;
 
 public class YelpController {
-    @FXML
-    private Label welcomeText;
+    private static final Dotenv dotenv = Dotenv.load();
+    private static final String JDBC_URL = dotenv.get("JDBC_URL");
+    private static final String JDBC_USER = dotenv.get("JDBC_USER");
+    private static final String JDBC_PASSWORD = dotenv.get("JDBC_PASSWORD");
+    private Connection connection;
 
-    @FXML
-    protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
+    @FXML private Label searchText;
+    @FXML private ComboBox<String> stateComboBox;
+    @FXML private Button filterButton;
+    @FXML private ListView<String> categoriesList;
+    @FXML private Button searchButton;
+    @FXML private TableView<Business> businessTable;
+
+    @FXML void initialize() {
+        updateStates();
     }
+
+    private void updateStates() {
+        ObservableList<String> states = FXCollections.observableArrayList();
+        String stateQuery = """
+        SELECT DISTINCT state
+        FROM business
+        ORDER BY state
+        """;
+        try {
+            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(stateQuery)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                states.add(rs.getString("state"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
