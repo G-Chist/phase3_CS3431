@@ -66,12 +66,27 @@ public class YelpController {
     """;
 
         // You can iterate over all selected categories as follows. You should add more conditions to your query dynamically.
-    /*
-    for (String cat : categories) {
-        businessQuery = businessQuery.concat(" AND ....");
-    }
-    */
+        businessQuery = businessQuery.concat(" AND business_id IN (SELECT C1.business_id FROM Category C1 WHERE ");
+        for (String cat : categories) {
+            businessQuery = businessQuery.concat("C1.categoryName = '");
+            businessQuery = businessQuery.concat(cat);
+            businessQuery = businessQuery.concat("' OR ");
+        }
+        businessQuery = businessQuery.concat(" FALSE)");
+        // Final results looks like the following:
+        /*
+            SELECT business_id, name, street_address, city, latitude, longitude, starRating, num_tip
+            FROM business
+            WHERE business.state = {State}
+            AND business_id IN (SELECT C1.business_id FROM Category C1 WHERE
+                C1.categoryName = {Category1} OR
+                C1.categoryName = {Category2} OR
+                ...
+                FALSE) -- A OR FALSE = A by definition
+         */
+
         businessQuery = businessQuery.concat(" ORDER BY name");
+        System.out.println(businessQuery);
 
         try {
             connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
