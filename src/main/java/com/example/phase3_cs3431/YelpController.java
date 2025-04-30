@@ -25,6 +25,7 @@ public class YelpController {
 
     @FXML private Label searchText;
     @FXML private ComboBox<String> stateComboBox;
+    @FXML private ComboBox<String> cityComboBox;
     @FXML private Button filterButton;
     @FXML private ListView<String> categoryList;
     @FXML private Button searchButton;
@@ -47,6 +48,7 @@ public class YelpController {
                 .addListener((observable, oldState, newState) -> {
                     if (newState != null)
                         updateCategories(newState);
+                        updateCities(newState); // Update cities list
                 });
         filterButton.setOnAction(event->{updateCategories(stateComboBox.getSelectionModel().getSelectedItem());});
         searchButton.setOnAction(event->{searchBusinesses();});
@@ -250,5 +252,36 @@ public class YelpController {
 
         try {connection.close();} catch (SQLException ex) {}
     }
+
+    private void updateCities(String selectedState) {
+        ObservableList<String> cities = FXCollections.observableArrayList();
+        String cityQuery = """
+            SELECT DISTINCT city
+            FROM business
+            WHERE state = ?
+            ORDER BY city
+        """;
+
+        try {
+            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(cityQuery)) {
+            ps.setString(1, selectedState); // set the state parameter
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                cities.add(rs.getString("city"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        cityComboBox.setItems(cities);
+
+        try { connection.close(); } catch (SQLException ex) { ex.printStackTrace(); }
+    }
+
 
 }
