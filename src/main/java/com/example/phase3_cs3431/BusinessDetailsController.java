@@ -31,6 +31,7 @@ public class BusinessDetailsController {
     public void initData (String businessName, ObservableList<Business> similars) {
         System.out.println("initData called!");
         titleLabel.setText("Similar to: " + businessName);
+        System.out.println("Label text set: " + businessName);
         similarBusinesses.setItems(similars);
     }
 }

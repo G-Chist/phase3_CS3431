@@ -78,6 +78,7 @@ public class YelpController {
 
             Scene scene = new Scene(root, 700, 600);
             scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
+            dialog.setScene(scene);
             dialog.showAndWait();
         } catch (Exception ex) {
             ex.printStackTrace();
