@@ -6,8 +6,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -47,6 +50,73 @@ public class YelpController {
                 });
         filterButton.setOnAction(event->{updateCategories(stateComboBox.getSelectionModel().getSelectedItem());});
         searchButton.setOnAction(event->{searchBusinesses();});
+        businessTable.setOnMouseClicked(event -> {
+           if (event.getClickCount() == 2) {
+               Business selected = businessTable.getSelectionModel().getSelectedItem();
+               if (selected != null) {
+                   loadBusinessPage(selected);
+               }
+           }
+        });
+    }
+
+    private void loadBusinessPage(Business selected) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(YelpApplication.class.getResource("businessDetails.fxml"));
+            Parent root = fxmlLoader.load();
+            BusinessDetailsController controller = fxmlLoader.getController();
+
+            ObservableList<Business> businesses = FXCollections.observableArrayList(
+                    getSimilarBusinesses(selected)
+            );
+            controller.initData(selected.getName(), businesses);
+
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.initOwner(businessTable.getScene().getWindow());
+            dialog.setTitle("Business Details");
+
+            Scene scene = new Scene(root, 700, 600);
+            scene.getStylesheets().add(getClass().getResource("/styles/styles.css").toExternalForm());
+            dialog.showAndWait();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    private List<Business> getSimilarBusinesses(Business selected) {
+
+        List<Business> res = new ArrayList<>();
+
+        String stateQuery = """
+            SELECT business_id, name, street_address, city, state
+            FROM Business
+            WHERE name = ?
+        """;
+
+        try {
+            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(stateQuery)) {
+            ps.setString(1, selected.getName());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                res.add(new Business(
+                        rs.getString("business_id"),
+                        rs.getString("name"),
+                        rs.getString("street_address"),
+                        rs.getString("city")
+                ));
+                System.out.println("Found similar: " + rs.getString("name") + " " + rs.getString("city"));
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return res;
     }
 
     private void searchBusinesses(){
@@ -98,12 +168,6 @@ public class YelpController {
             int count = 1;
             ps.setString(count, state);
             count++;
-        /*
-        for (String cat: categories){
-            ps.setString(count, cat);
-            count++;
-        }
-        */
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 res.add(new Business(
