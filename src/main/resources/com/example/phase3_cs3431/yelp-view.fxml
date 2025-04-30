@@ -30,13 +30,21 @@
                                  <VBox.margin>
                                     <Insets left="4.0" top="10.0" />
                                  </VBox.margin></Label>
-                              <ComboBox fx:id="stateComboBox" prefHeight="26.0" prefWidth="222.0" promptText="Select a State">
+                              <ComboBox id="stateComboBox" fx:id="stateComboBox" prefHeight="26.0" prefWidth="222.0" promptText="Select a State">
                                  <padding>
                                     <Insets left="4.0" right="4.0" />
                                  </padding>
                                  <VBox.margin>
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin></ComboBox>
+                              <ComboBox fx:id="cityComboBox" prefHeight="26.0" prefWidth="222.0" promptText="Select City">
+                                 <padding>
+                                    <Insets left="4.0" right="4.0" />
+                                 </padding>
+                                 <VBox.margin>
+                                    <Insets left="4.0" right="4.0" />
+                                 </VBox.margin>
+                              </ComboBox>
                               <Button fx:id="filterButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="213.0" text="Apply Location Filter">
                                  <padding>
                                     <Insets left="3.0" right="3.0" />
