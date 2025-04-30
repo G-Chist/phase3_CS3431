@@ -28,6 +28,7 @@ public class YelpController {
     @FXML private ComboBox<String> cityComboBox;
     @FXML private Button filterButton;
     @FXML private ListView<String> categoryList;
+    @FXML private ListView<String> attributeList;
     @FXML private Button searchButton;
     @FXML private TableView<Business> businessTable;
     @FXML private TableColumn<Business, String> nameColumn;
@@ -50,14 +51,23 @@ public class YelpController {
         updateStates();
         categoryList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         categoryList.setItems(FXCollections.observableArrayList());
+        attributeList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        attributeList.setItems(FXCollections.observableArrayList());
         stateComboBox.getSelectionModel()
                 .selectedItemProperty()
                 .addListener((observable, oldState, newState) -> {
                     if (newState != null)
-                        updateCategories(newState);
                         updateCities(newState); // Update cities list
                 });
-        filterButton.setOnAction(event->{updateCategories(stateComboBox.getSelectionModel().getSelectedItem());});
+        cityComboBox.getSelectionModel()
+                .selectedItemProperty()
+                .addListener((observable, oldCity, newCity) -> {
+                    if (newCity != null) {
+                        updateAttributes(stateComboBox.getSelectionModel().getSelectedItem(), newCity);
+                        updateCategories(stateComboBox.getSelectionModel().getSelectedItem(), newCity);
+                    }
+                });
+        filterButton.setOnAction(event->{updateCategories(stateComboBox.getSelectionModel().getSelectedItem(), cityComboBox.getSelectionModel().getSelectedItem());});
         searchButton.setOnAction(event->{searchBusinesses();});
         businessTable.setOnMouseClicked(event -> {
            if (event.getClickCount() == 2) {
@@ -214,29 +224,30 @@ public class YelpController {
 
 
 
-    private void updateCategories(String state) {
-        // String state = stateComboBox.getSelectionModel().getSelectedItem();
-        if (state == null) {
+    private void updateCategories(String state, String city) {
+        if (state == null || city == null) {
             return;
         }
 
         ObservableList<String> categories = FXCollections.observableArrayList();
-        String stateQuery = """
-            SELECT DISTINCT Category.categoryName
-            FROM Category
-            JOIN business ON business.business_id = Category.business_id
-            WHERE business.state = ?
-            ORDER BY Category.categoryName
-        """;
+        String query = """
+        SELECT DISTINCT Category.categoryName
+        FROM Category
+        JOIN business ON business.business_id = Category.business_id
+        WHERE business.state = ? AND business.city = ?
+        ORDER BY Category.categoryName
+    """;
 
         try {
             connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
         } catch (SQLException ex) {
             ex.printStackTrace();
+            return;
         }
 
-        try (PreparedStatement ps = connection.prepareStatement(stateQuery)) {
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
             ps.setString(1, state);
+            ps.setString(2, city);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 categories.add(rs.getString("categoryName"));
@@ -247,6 +258,7 @@ public class YelpController {
 
         categoryList.setItems(categories);
     }
+
 
 
     private void updateStates() {
@@ -305,6 +317,59 @@ public class YelpController {
 
         try { connection.close(); } catch (SQLException ex) { ex.printStackTrace(); }
     }
+
+    private void updateAttributes(String selectedState, String selectedCity) {
+        ObservableList<String> allAttributes = FXCollections.observableArrayList();
+        ObservableList<String> selectedAttributes = FXCollections.observableArrayList();
+
+        String attrQuery = """
+            SELECT DISTINCT A.attribute_name, A.attValue
+            FROM Attribute A
+            JOIN business B ON A.business_id = B.business_id
+            WHERE B.state = ? AND B.city = ? AND A.attValue <> 'False'
+        """;
+
+        try {
+            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        try (PreparedStatement ps = connection.prepareStatement(attrQuery)) {
+            ps.setString(1, selectedState);
+            ps.setString(2, selectedCity);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String attrName = rs.getString("attribute_name");
+                String attValue = rs.getString("attValue");
+
+                if (!allAttributes.contains(attrName)) {
+                    allAttributes.add(attrName);
+                }
+
+                if ("True".equalsIgnoreCase(attValue) && !selectedAttributes.contains(attrName)) {
+                    selectedAttributes.add(attrName);
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        attributeList.setItems(allAttributes);
+        attributeList.getSelectionModel().clearSelection();
+
+        for (String attr : selectedAttributes) {
+            attributeList.getSelectionModel().select(attr);
+        }
+
+        try {
+            connection.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 
 
 }
