@@ -33,12 +33,19 @@ public class YelpController {
     @FXML private TableColumn<Business, String> nameColumn;
     @FXML private TableColumn<Business, String> addressColumn;
     @FXML private TableColumn<Business, String> cityColumn;
+    @FXML private TableColumn<Business, String> starsColumn;
+    @FXML private TableColumn<Business, String> tipsColumn;
+    @FXML private TableColumn<Business, String> latitudeColumn;
+    @FXML private TableColumn<Business, String> longitudeColumn;
 
     @FXML void initialize() {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
         cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
-
+        starsColumn.setCellValueFactory(new PropertyValueFactory<>("starRating"));
+        tipsColumn.setCellValueFactory(new PropertyValueFactory<>("numTip"));
+        latitudeColumn.setCellValueFactory(new PropertyValueFactory<>("latitude"));
+        longitudeColumn.setCellValueFactory(new PropertyValueFactory<>("longitude"));
 
         updateStates();
         categoryList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -92,7 +99,7 @@ public class YelpController {
         List<Business> res = new ArrayList<>();
 
         String stateQuery = """
-            SELECT business_id, name, street_address, city, state
+            SELECT *
             FROM Business
             WHERE name = ?
         """;
@@ -111,7 +118,14 @@ public class YelpController {
                         rs.getString("business_id"),
                         rs.getString("name"),
                         rs.getString("street_address"),
-                        rs.getString("city")
+                        rs.getString("city"),
+                        rs.getString("state"),
+                        rs.getInt("zip_code"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude"),
+                        rs.getInt("starRating"),
+                        rs.getInt("num_tip"),
+                        rs.getInt("is_open")
                 ));
                 System.out.println("Found similar: " + rs.getString("name") + " " + rs.getString("city"));
             }
@@ -124,18 +138,19 @@ public class YelpController {
 
     private void searchBusinesses(){
         String state = stateComboBox.getSelectionModel().getSelectedItem();
+        String city = cityComboBox.getSelectionModel().getSelectedItem();
         List<String> cats = new ArrayList<>(categoryList.getSelectionModel().getSelectedItems());
-        List<Business> results = queryBusinesses (state, cats);
+        List<Business> results = queryBusinesses (state, city, cats);
         businessTable.setItems (FXCollections.observableArrayList (results));
     }
 
-    private List<Business> queryBusinesses(String state, List<String> categories) {
+    private List<Business> queryBusinesses(String state, String city, List<String> categories) {
         List<Business> res = new ArrayList<>();
 
         String businessQuery = """
-        SELECT business_id, name, street_address, city, latitude, longitude, starRating, num_tip
+        SELECT *
         FROM business
-        WHERE business.state = ?
+        WHERE business.state = ? AND business.city = ?
     """;
 
         // You can iterate over all selected categories as follows. You should add more conditions to your query dynamically.
@@ -171,13 +186,21 @@ public class YelpController {
             int count = 1;
             ps.setString(count, state);
             count++;
+            ps.setString(count, city);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 res.add(new Business(
                         rs.getString("business_id"),
                         rs.getString("name"),
                         rs.getString("street_address"),
-                        rs.getString("city")
+                        rs.getString("city"),
+                        rs.getString("state"),
+                        rs.getInt("zip_code"),
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude"),
+                        rs.getInt("starRating"),
+                        rs.getInt("num_tip"),
+                        rs.getInt("is_open")
                 ));
             }
         } catch (SQLException ex) {
