@@ -31,7 +31,7 @@
     -fx-padding: 4px 6px;
     -fx-border-width: 0 0 1px 0;
     -fx-border-color: derive(-button-color, 80%);
-    -fx-alignment: LEFT;
+    -fx-alignment: CENTER_LEFT;
 }
 
 /* === Table Header Styling === */
