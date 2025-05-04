@@ -159,7 +159,7 @@ public class YelpController {
         List<Business> res = new ArrayList<>();
 
         String attributeQuery = """
-                SELECT *
+                (SELECT *
                 FROM Attribute
                 WHERE 
         """;
@@ -167,19 +167,46 @@ public class YelpController {
         for (String attr : attrs) {
             attributeQuery = attributeQuery.concat("(attribute_name = '");
             attributeQuery = attributeQuery.concat(attr);
-            attributeQuery = attributeQuery.concat("' AND attValue <> FALSE) OR ");
+            attributeQuery = attributeQuery.concat("' AND attValue <> 'False') OR ");
         }
-        attributeQuery = attributeQuery.concat(" FALSE");
+        attributeQuery = attributeQuery.concat(" FALSE)");
         System.out.println(attributeQuery);
 
+        // Final results looks like the following:
+        /*
+        (SELECT *
+        FROM Attribute
+        WHERE
+        (attribute_name = 'Alcohol' AND attValue <> FALSE) OR
+        (attribute_name = 'BikeParking' AND attValue <> FALSE) OR
+        (attribute_name = 'BusinessAcceptsBitcoin' AND attValue <> FALSE) OR
+        (attribute_name = 'BusinessAcceptsCreditCards' AND attValue <> FALSE) OR
+        FALSE) -- A OR FALSE = A by definition
+         */
+
         String businessQuery = """
-            SELECT *
+                SELECT DISTINCT
+                business.business_id,
+                business.name,
+                business.street_address,
+                business.city,
+                business.state,
+                business.zip_code,
+                business.latitude,
+                business.longitude,
+                business.starRating,
+                business.num_tip,
+                business.is_open
             FROM business
-            WHERE business.state = ? AND business.city = ?
-        """;
+           """;
+
+        businessQuery = businessQuery.concat(" NATURAL JOIN ");
+        businessQuery = businessQuery.concat(attributeQuery);
+
+        businessQuery = businessQuery.concat("WHERE business.state = ? AND business.city = ?");
 
         // You can iterate over all selected categories as follows. You should add more conditions to your query dynamically.
-        businessQuery = businessQuery.concat(" AND business_id IN (SELECT C1.business_id FROM Category C1 WHERE ");
+        businessQuery = businessQuery.concat(" AND business.business_id IN (SELECT C1.business_id FROM Category C1 WHERE ");
         for (String cat : categories) {
             businessQuery = businessQuery.concat("C1.categoryName = '");
             businessQuery = businessQuery.concat(cat);
