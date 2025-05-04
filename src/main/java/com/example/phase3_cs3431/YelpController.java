@@ -109,11 +109,67 @@ public class YelpController {
 
         List<Business> res = new ArrayList<>();
 
-        String stateQuery = """
-            SELECT *
-            FROM Business
-            WHERE name = ?
+        String count_categories_function = "CREATE OR REPLACE FUNCTION\n" +
+                "    count_categories(b1_id VARCHAR(22),b2_id VARCHAR(22)) RETURNS INT AS '\n" +
+                "    DECLARE\n" +
+                "        commonCategories INT;\n" +
+                "    BEGIN\n" +
+                "        WITH categories AS (SELECT categoryname\n" +
+                "                            FROM category\n" +
+                "                            WHERE business_id = b1_id\n" +
+                "                            INTERSECT\n" +
+                "                            SELECT categoryname\n" +
+                "                            FROM category\n" +
+                "                            WHERE business_id = b2_id)\n" +
+                "        SELECT count(categories.categoryname)\n" +
+                "        INTO commonCategories\n" +
+                "        FROM categories;\n" +
+                "        RETURN commonCategories;\n" +
+                "    END;\n" +
+                "' LANGUAGE plpgsql;";
+
+        String geodistance_function = "CREATE OR REPLACE FUNCTION geodistance(\n" +
+                "    lat_a DOUBLE PRECISION,\n" +
+                "    lng_a DOUBLE PRECISION,\n" +
+                "    lat_b DOUBLE PRECISION,\n" +
+                "    lng_b DOUBLE PRECISION\n" +
+                ") RETURNS DOUBLE PRECISION AS '\n" +
+                "DECLARE\n" +
+                "    radius_earth_km CONSTANT DOUBLE PRECISION := 6371.0;\n" +
+                "    delta_lat_rad DOUBLE PRECISION;\n" +
+                "    delta_lng_rad DOUBLE PRECISION;\n" +
+                "    a DOUBLE PRECISION;\n" +
+                "    c DOUBLE PRECISION;\n" +
+                "BEGIN\n" +
+                "    -- Convert delta values to radians\n" +
+                "    delta_lat_rad := radians(lat_b - lat_a);\n" +
+                "    delta_lng_rad := radians(lng_b - lng_a);\n" +
+                "\n" +
+                "    -- Apply the haversine formula\n" +
+                "    a := sin(delta_lat_rad / 2)^2\n" +
+                "        + cos(radians(lat_a)) * cos(radians(lat_b))\n" +
+                "             * sin(delta_lng_rad / 2)^2;\n" +
+                "\n" +
+                "    c := 2 * atan2(sqrt(a), sqrt(1 - a));\n" +
+                "\n" +
+                "    RETURN radius_earth_km * c / 1.609344; -- convert from km to miles\n" +
+                "END;\n" +
+                "' LANGUAGE plpgsql;";
+
+        String stateQuery = geodistance_function + count_categories_function + """
+            WITH myBusiness AS (SELECT ? as business_id)
+            SELECT b.business_id, b.name, b.city, b.zip_code, b2.business_id, b2.name, count_categories(b.business_id, b2.business_id) AS rank
+            FROM business b
+            JOIN myBusiness ON b.business_id = myBusiness.business_id
+            INNER JOIN business b2 on b.zip_code = b2.zip_code
+            WHERE 20 > (SELECT geodistance(b2.latitude, b2.longitude, b.latitude, b.longitude))
+                AND 0 < (SELECT count_categories(myBusiness.business_id, b2.business_id))
+                AND b2.business_id <> b.business_id
+            ORDER BY count_categories(b.business_id, b2.business_id) DESC
+            LIMIT 20;
         """;
+
+        System.out.println(stateQuery);
 
         try {
             connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
@@ -122,7 +178,7 @@ public class YelpController {
         }
 
         try (PreparedStatement ps = connection.prepareStatement(stateQuery)) {
-            ps.setString(1, selected.getName());
+            ps.setString(1, selected.getId());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 res.add(new Business(
