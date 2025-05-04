@@ -150,18 +150,33 @@ public class YelpController {
         String state = stateComboBox.getSelectionModel().getSelectedItem();
         String city = cityComboBox.getSelectionModel().getSelectedItem();
         List<String> cats = new ArrayList<>(categoryList.getSelectionModel().getSelectedItems());
-        List<Business> results = queryBusinesses (state, city, cats);
+        List<String> attrs = new ArrayList<>(attributeList.getSelectionModel().getSelectedItems());
+        List<Business> results = queryBusinesses (state, city, cats, attrs);
         businessTable.setItems (FXCollections.observableArrayList (results));
     }
 
-    private List<Business> queryBusinesses(String state, String city, List<String> categories) {
+    private List<Business> queryBusinesses(String state, String city, List<String> categories, List<String> attrs) {
         List<Business> res = new ArrayList<>();
 
+        String attributeQuery = """
+                SELECT *
+                FROM Attribute
+                WHERE 
+        """;
+
+        for (String attr : attrs) {
+            attributeQuery = attributeQuery.concat("(attribute_name = '");
+            attributeQuery = attributeQuery.concat(attr);
+            attributeQuery = attributeQuery.concat("' AND attValue <> FALSE) OR ");
+        }
+        attributeQuery = attributeQuery.concat(" FALSE");
+        System.out.println(attributeQuery);
+
         String businessQuery = """
-        SELECT *
-        FROM business
-        WHERE business.state = ? AND business.city = ?
-    """;
+            SELECT *
+            FROM business
+            WHERE business.state = ? AND business.city = ?
+        """;
 
         // You can iterate over all selected categories as follows. You should add more conditions to your query dynamically.
         businessQuery = businessQuery.concat(" AND business_id IN (SELECT C1.business_id FROM Category C1 WHERE ");
