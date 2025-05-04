@@ -156,49 +156,65 @@ public class YelpController {
                 "END;\n" +
                 "' LANGUAGE plpgsql;";
 
-        String stateQuery = geodistance_function + count_categories_function + """
-            WITH myBusiness AS (SELECT ? as business_id)
-            SELECT b.business_id, b.name, b.city, b.zip_code, b2.business_id, b2.name, count_categories(b.business_id, b2.business_id) AS rank
-            FROM business b
-            JOIN myBusiness ON b.business_id = myBusiness.business_id
-            INNER JOIN business b2 on b.zip_code = b2.zip_code
-            WHERE 20 > (SELECT geodistance(b2.latitude, b2.longitude, b.latitude, b.longitude))
-                AND 0 < (SELECT count_categories(myBusiness.business_id, b2.business_id))
-                AND b2.business_id <> b.business_id
-            ORDER BY count_categories(b.business_id, b2.business_id) DESC
-            LIMIT 20;
-        """;
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
 
-        System.out.println(stateQuery);
-
-        try {
-            connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-        try (PreparedStatement ps = connection.prepareStatement(stateQuery)) {
-            ps.setString(1, selected.getId());
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                res.add(new Business(
-                        rs.getString("business_id"),
-                        rs.getString("name"),
-                        rs.getString("street_address"),
-                        rs.getString("city"),
-                        rs.getString("state"),
-                        rs.getInt("zip_code"),
-                        rs.getDouble("latitude"),
-                        rs.getDouble("longitude"),
-                        rs.getInt("starRating"),
-                        rs.getInt("num_tip"),
-                        rs.getInt("is_open")
-                ));
-                System.out.println("Found similar: " + rs.getString("name") + " " + rs.getString("city"));
+            // First create the functions separately
+            try (Statement stmt = conn.createStatement()) {
+                stmt.execute(geodistance_function); // does not return a ResultSet
+                stmt.execute(count_categories_function);
             }
+
+            // Now run the SELECT that returns data
+            String stateQuery = """
+                WITH myBusiness AS (SELECT '""";
+
+            stateQuery = stateQuery.concat(selected.getId());
+            stateQuery = stateQuery.concat("'as business_id)");
+            stateQuery = stateQuery.concat("""
+        SELECT b.business_id, b.name, b.city, b.zip_code,
+               b2.business_id as b2business_id, b2.name as b2name,
+               b2.street_address as b2street_address, b2.city as b2city, b2.state as b2state,
+               b2.zip_code as b2zip_code, b2.latitude as b2latitude, b2.longitude as b2longitude,
+               b2.starRating as b2starRating, b2.num_tip as b2num_tip, b2.is_open as b2is_open,
+               count_categories(b.business_id, b2.business_id) AS rank
+        FROM business b
+        JOIN myBusiness ON b.business_id = myBusiness.business_id
+        INNER JOIN business b2 ON b.zip_code = b2.zip_code
+        WHERE 20 > geodistance(b2.latitude, b2.longitude, b.latitude, b.longitude)
+          AND 0 < count_categories(myBusiness.business_id, b2.business_id)
+          AND b2.business_id <> b.business_id
+        ORDER BY count_categories(b.business_id, b2.business_id) DESC
+        LIMIT 20;
+    """);
+
+            System.out.println(stateQuery);
+
+
+            try (PreparedStatement ps = conn.prepareStatement(stateQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    res.add(new Business(
+                            rs.getString("b2business_id"),
+                            rs.getString("b2name"),
+                            rs.getString("b2street_address"),
+                            rs.getString("b2city"),
+                            rs.getString("b2state"),
+                            rs.getInt("b2zip_code"),
+                            rs.getDouble("b2latitude"),
+                            rs.getDouble("b2longitude"),
+                            rs.getInt("b2starRating"),
+                            rs.getInt("b2num_tip"),
+                            rs.getInt("b2is_open")
+                    ));
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+
 
         return res;
     }
