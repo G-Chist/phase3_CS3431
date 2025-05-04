@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="960.0" prefWidth="1280.0" spacing="20.0" styleClass="root" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.phase3_cs3431.YelpController">
+<VBox alignment="CENTER" prefHeight="960.0" prefWidth="1280.0" spacing="20.0" styleClass="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.phase3_cs3431.YelpController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
@@ -40,7 +49,7 @@
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin>
                               </ComboBox>
-                              <Button fx:id="filterButton" styleClass="button-display-settings" mnemonicParsing="false" prefHeight="26.0" prefWidth="213.0" text="Apply Location Filter">
+                              <Button fx:id="filterButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="213.0" styleClass="button-display-settings" text="Apply Location Filter">
                                  <padding>
                                     <Insets left="3.0" right="3.0" />
                                  </padding>
@@ -68,7 +77,7 @@
                                     <Insets left="4.0" right="4.0" />
                                  </VBox.margin>
                               </ListView>
-                              <Button fx:id="searchButton"  styleClass="button-display-settings" mnemonicParsing="false" prefHeight="26.0" prefWidth="206.0" text="Search">
+                              <Button fx:id="searchButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="206.0" styleClass="button-display-settings" text="Search">
                                  <padding>
                                     <Insets left="4.0" right="4.0" />
                                  </padding>
@@ -92,9 +101,14 @@
                               <Insets left="10.0" top="10.0" />
                            </HBox.margin>
                         </Label>
+                        <Label id="resultsFoundLabel" fx:id="resultsFoundLabel" text="results found">
+                           <HBox.margin>
+                              <Insets top="10.0" />
+                           </HBox.margin>
+                        </Label>
                      </children>
                   </HBox>
-                  <TableView fx:id="businessTable" styleClass="table-cell-text" prefHeight="450.0" prefWidth="1001.0">
+                  <TableView fx:id="businessTable" prefHeight="450.0" prefWidth="1001.0" styleClass="table-cell-text">
                      <columns>
                         <TableColumn fx:id="nameColumn" minWidth="170" prefWidth="140.0" text="Name" />
                         <TableColumn fx:id="addressColumn" minWidth="200.0" prefWidth="200.0" text="Address" />
@@ -108,7 +122,7 @@
                         <Insets left="4.0" right="4.0" />
                      </VBox.margin>
                   </TableView>
-                  <Button fx:id="yelp_button" styleClass="button-display-settings" mnemonicParsing="false" text="Yelp">
+                  <Button fx:id="yelp_button" mnemonicParsing="false" styleClass="button-display-settings" text="Yelp">
                      <VBox.margin>
                         <Insets left="4.0" right="4.0" />
                      </VBox.margin></Button>

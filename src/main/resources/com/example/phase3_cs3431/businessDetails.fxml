@@ -23,9 +23,9 @@
             </HBox>
             <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
               <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="200.0" text="Name" />
-                <TableColumn fx:id="addressColumn" prefWidth="200.0" text="Address" />
-                  <TableColumn fx:id="cityColumn" prefWidth="100.0" text="City" />
+                <TableColumn fx:id="nameColumn" prefWidth="240.00000619888306" text="Name" />
+                <TableColumn fx:id="addressColumn" prefWidth="233.5999755859375" text="Address" />
+                  <TableColumn fx:id="cityColumn" prefWidth="217.60000610351562" text="City" />
               </columns>
                <VBox.margin>
                   <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
