@@ -1,6 +1,7 @@
 package com.example.phase3_cs3431;
 
 import io.github.cdimascio.dotenv.Dotenv;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -15,8 +16,8 @@ public class BusinessDetailsController {
     private static final String JDBC_PASSWORD = dotenv.get("JDBC_PASSWORD");
     private Connection connection;
 
-    @FXML
-    private Label titleLabel;
+    @FXML private Label titleLabel;
+    @FXML private ListView<String> categoryBusinessList;
     @FXML private TableView<Business> similarBusinesses;
     @FXML private TableColumn<Business, String> rankColumn;
     @FXML private TableColumn<Business, String> nameColumn;
@@ -33,12 +34,14 @@ public class BusinessDetailsController {
         starsColumn.setCellValueFactory(new PropertyValueFactory<>("starRating"));
         latColumn.setCellValueFactory(new PropertyValueFactory<>("latitude"));
         longColumn.setCellValueFactory(new PropertyValueFactory<>("longitude"));
+        categoryBusinessList.setItems(FXCollections.observableArrayList());
     }
 
-    public void initData (String businessName, ObservableList<Business> similars) {
+    public void initData (String businessName, ObservableList<Business> similars, ObservableList<String> categories) {
         System.out.println("initData called!");
         titleLabel.setText("Similar to: " + businessName);
         System.out.println("Label text set: " + businessName);
         similarBusinesses.setItems(similars);
+        categoryBusinessList.setItems(categories);
     }
 }

@@ -39,6 +39,8 @@ public class YelpController {
     @FXML private TableColumn<Business, String> tipsColumn;
     @FXML private TableColumn<Business, String> latitudeColumn;
     @FXML private TableColumn<Business, String> longitudeColumn;
+    @FXML private ListView<String> categoryBusinessList;
+
 
     @FXML void initialize() {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -85,11 +87,18 @@ public class YelpController {
             FXMLLoader fxmlLoader = new FXMLLoader(YelpApplication.class.getResource("businessDetails.fxml"));
             Parent root = fxmlLoader.load();
             BusinessDetailsController controller = fxmlLoader.getController();
+            //attributesBusinessList.setItems(FXCollections.observableArrayList());
 
             ObservableList<Business> businesses = FXCollections.observableArrayList(
                     getSimilarBusinesses(selected)
             );
-            controller.initData(selected.getName(), businesses);
+            ObservableList<String> categories = FXCollections.observableArrayList(
+                    getDetailsCategories(selected)
+            );
+            //ObservableList<String> attributes = FXCollections.observableArrayList(
+              //      getDetailsAttributes(selected)
+            //);
+            controller.initData(selected.getName(), businesses, categories);
 
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
@@ -217,6 +226,40 @@ public class YelpController {
 
 
         return res;
+    }
+
+    private List<String> getDetailsCategories(Business selected){
+        List<String> categories = new ArrayList<String>();
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+
+            // Now run the SELECT that returns data
+            String stateQuery = """
+            SELECT categoryname
+            FROM category
+            NATURAL JOIN business
+            WHERE business_id = '""";
+
+            stateQuery = stateQuery.concat(selected.getId());
+            stateQuery = stateQuery.concat("';");
+
+            System.out.println(stateQuery);
+
+
+            try (PreparedStatement ps = conn.prepareStatement(stateQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    categories.add(rs.getString("categoryname"));
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return categories;
     }
 
     private void searchBusinesses(){

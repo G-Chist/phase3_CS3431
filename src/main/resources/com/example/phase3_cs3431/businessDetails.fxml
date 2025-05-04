@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,15 +13,43 @@
     <children>
         <VBox prefHeight="600.0" prefWidth="700.0">
             <children>
-                <HBox prefHeight="100.0" prefWidth="200.0">
+                <HBox prefHeight="339.0" prefWidth="700.0">
                     <children>
-                        <Label fx:id="titleLabel" text="Similar To">
-                            <HBox.margin>
-                                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-                            </HBox.margin>
+                  <VBox prefHeight="202.0" prefWidth="350.0">
+                     <children>
+                        <Label text="Categories for Business">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
                         </Label>
+                        <ListView id="categoryBusinessList" fx:id="categoryBusinessList" prefHeight="200.0" prefWidth="200.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </ListView>
+                     </children>
+                  </VBox>
+                  <VBox prefHeight="202.0" prefWidth="350.0">
+                     <children>
+                        <Label text="Attributes for Business">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ListView fx:id="attributeBusinessList" prefHeight="200.0" prefWidth="200.0">
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </ListView>
+                     </children>
+                  </VBox>
                     </children>
                 </HBox>
+                  <Label fx:id="titleLabel" text="Similar To">
+               <VBox.margin>
+                  <Insets left="5.0" />
+               </VBox.margin>
+                  </Label>
                 <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
               <columns>
                 <TableColumn fx:id="nameColumn" prefWidth="115.19998931884766" text="Name" />
@@ -38,4 +67,3 @@
       </VBox>
    </children>
 </AnchorPane>
-
