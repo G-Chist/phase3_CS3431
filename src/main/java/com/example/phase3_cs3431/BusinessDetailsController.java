@@ -17,6 +17,7 @@ public class BusinessDetailsController {
     private Connection connection;
 
     @FXML private Label titleLabel;
+    @FXML private ListView<String> attributeBusinessList;
     @FXML private ListView<String> categoryBusinessList;
     @FXML private TableView<Business> similarBusinesses;
     @FXML private TableColumn<Business, String> rankColumn;
@@ -35,13 +36,15 @@ public class BusinessDetailsController {
         latColumn.setCellValueFactory(new PropertyValueFactory<>("latitude"));
         longColumn.setCellValueFactory(new PropertyValueFactory<>("longitude"));
         categoryBusinessList.setItems(FXCollections.observableArrayList());
+        attributeBusinessList.setItems(FXCollections.observableArrayList());
     }
 
-    public void initData (String businessName, ObservableList<Business> similars, ObservableList<String> categories) {
+    public void initData (String businessName, ObservableList<Business> similars, ObservableList<String> categories, ObservableList<String> attributes) {
         System.out.println("initData called!");
         titleLabel.setText("Similar to: " + businessName);
         System.out.println("Label text set: " + businessName);
         similarBusinesses.setItems(similars);
         categoryBusinessList.setItems(categories);
+        attributeBusinessList.setItems(attributes);
     }
 }

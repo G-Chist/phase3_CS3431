@@ -39,7 +39,6 @@ public class YelpController {
     @FXML private TableColumn<Business, String> tipsColumn;
     @FXML private TableColumn<Business, String> latitudeColumn;
     @FXML private TableColumn<Business, String> longitudeColumn;
-    @FXML private ListView<String> categoryBusinessList;
 
 
     @FXML void initialize() {
@@ -95,10 +94,10 @@ public class YelpController {
             ObservableList<String> categories = FXCollections.observableArrayList(
                     getDetailsCategories(selected)
             );
-            //ObservableList<String> attributes = FXCollections.observableArrayList(
-              //      getDetailsAttributes(selected)
-            //);
-            controller.initData(selected.getName(), businesses, categories);
+            ObservableList<String> attributes = FXCollections.observableArrayList(
+                    getDetailsAttributes(selected)
+            );
+            controller.initData(selected.getName(), businesses, categories, attributes);
 
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
@@ -260,6 +259,39 @@ public class YelpController {
         }
 
         return categories;
+    }
+
+    private List<String> getDetailsAttributes(Business selected){
+        List<String> attributes = new ArrayList<String>();
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+
+            // Now run the SELECT that returns data
+            String stateQuery = """
+            SELECT attribute_name
+            FROM attribute
+            NATURAL JOIN business
+            WHERE business_id = '""";
+            stateQuery = stateQuery.concat(selected.getId());
+            stateQuery = stateQuery.concat("';");
+
+            System.out.println(stateQuery);
+
+
+            try (PreparedStatement ps = conn.prepareStatement(stateQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    attributes.add(rs.getString("attribute_name"));
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return attributes;
     }
 
     private void searchBusinesses(){
