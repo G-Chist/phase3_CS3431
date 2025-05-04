@@ -31,6 +31,7 @@ public class YelpController {
     @FXML private ListView<String> attributeList;
     @FXML private Button searchButton;
     @FXML private TableView<Business> businessTable;
+    @FXML private Label resultsFoundLabel;
     @FXML private TableColumn<Business, String> nameColumn;
     @FXML private TableColumn<Business, String> addressColumn;
     @FXML private TableColumn<Business, String> cityColumn;
@@ -240,6 +241,7 @@ public class YelpController {
             count++;
             ps.setString(count, city);
             ResultSet rs = ps.executeQuery();
+            int businessCounter = 0;
             while (rs.next()) {
                 res.add(new Business(
                         rs.getString("business_id"),
@@ -254,7 +256,11 @@ public class YelpController {
                         rs.getInt("num_tip"),
                         rs.getInt("is_open")
                 ));
+                businessCounter++;
             }
+
+            resultsFoundLabel.setText(businessCounter + " results found");
+
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
