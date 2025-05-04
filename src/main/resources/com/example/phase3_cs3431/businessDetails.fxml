@@ -9,18 +9,19 @@
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane prefHeight="600.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.phase3_cs3431.BusinessDetailsController">
-   <children>
-      <VBox prefHeight="600.0" prefWidth="700.0">
-         <children>
-            <HBox prefHeight="100.0" prefWidth="200.0">
-               <children>
-                  <Label fx:id="titleLabel" text="Similar To">
-                     <HBox.margin>
-                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-                     </HBox.margin>
-                  </Label>
-               </children>
-            </HBox>
+    <children>
+        <VBox prefHeight="600.0" prefWidth="700.0">
+            <children>
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <children>
+                        <Label fx:id="titleLabel" text="Similar To">
+                            <HBox.margin>
+                                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                            </HBox.margin>
+                        </Label>
+                    </children>
+                </HBox>
+                <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
             <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
               <columns>
                 <TableColumn fx:id="nameColumn" prefWidth="115.19998931884766" text="Name" />
@@ -38,3 +39,4 @@
       </VBox>
    </children>
 </AnchorPane>
+
