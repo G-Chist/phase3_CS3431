@@ -18,14 +18,21 @@ public class BusinessDetailsController {
     @FXML
     private Label titleLabel;
     @FXML private TableView<Business> similarBusinesses;
+    @FXML private TableColumn<Business, String> rankColumn;
     @FXML private TableColumn<Business, String> nameColumn;
     @FXML private TableColumn<Business, String> addressColumn;
-    @FXML private TableColumn<Business, String> cityColumn;
+    @FXML private TableColumn<Business, String> idColumn;
+    @FXML private TableColumn<Business, String> starsColumn;
+    @FXML private TableColumn<Business, String> latColumn;
+    @FXML private TableColumn<Business, String> longColumn;
 
     @FXML void initialize() {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
-        cityColumn.setCellValueFactory(new PropertyValueFactory<>("city"));
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        starsColumn.setCellValueFactory(new PropertyValueFactory<>("starRating"));
+        latColumn.setCellValueFactory(new PropertyValueFactory<>("latitude"));
+        longColumn.setCellValueFactory(new PropertyValueFactory<>("longitude"));
     }
 
     public void initData (String businessName, ObservableList<Business> similars) {
