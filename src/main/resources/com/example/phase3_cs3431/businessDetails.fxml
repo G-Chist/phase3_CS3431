@@ -22,7 +22,6 @@
                     </children>
                 </HBox>
                 <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
-            <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
               <columns>
                 <TableColumn fx:id="nameColumn" prefWidth="115.19998931884766" text="Name" />
                 <TableColumn fx:id="addressColumn" prefWidth="143.20001220703125" text="Address" />
