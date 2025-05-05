@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -12,31 +13,57 @@
     <children>
         <VBox prefHeight="600.0" prefWidth="700.0">
             <children>
-                <HBox prefHeight="100.0" prefWidth="200.0">
+                <HBox prefHeight="339.0" prefWidth="700.0">
                     <children>
-                        <Label fx:id="titleLabel" text="Similar To">
-                            <HBox.margin>
-                                <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-                            </HBox.margin>
-                        </Label>
+                        <VBox prefHeight="202.0" prefWidth="350.0">
+                            <children>
+                                <Label text="Categories for Business">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </VBox.margin>
+                                </Label>
+                                <ListView id="categoryBusinessList" fx:id="categoryBusinessList" prefHeight="200.0" prefWidth="200.0">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </VBox.margin>
+                                </ListView>
+                            </children>
+                        </VBox>
+                        <VBox prefHeight="202.0" prefWidth="350.0">
+                            <children>
+                                <Label text="Attributes for Business">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </VBox.margin>
+                                </Label>
+                                <ListView fx:id="attributeBusinessList" prefHeight="200.0" prefWidth="200.0">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                    </VBox.margin>
+                                </ListView>
+                            </children>
+                        </VBox>
                     </children>
                 </HBox>
+                <Label fx:id="titleLabel" text="Similar To">
+                    <VBox.margin>
+                        <Insets left="5.0" />
+                    </VBox.margin>
+                </Label>
                 <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
-            <TableView fx:id="similarBusinesses" prefHeight="510.0" prefWidth="700.0">
-              <columns>
-                <TableColumn fx:id="nameColumn" prefWidth="115.19998931884766" text="Name" />
-                <TableColumn fx:id="addressColumn" prefWidth="143.20001220703125" text="Address" />
-                  <TableColumn id="idColumn" fx:id="idColumn" prefWidth="115.20001220703125" text="ID" />
-                  <TableColumn id="starsColumn" fx:id="starsColumn" prefWidth="98.39999389648438" text="Stars" />
-                  <TableColumn id="latColumn" fx:id="latColumn" prefWidth="119.99996948242188" text="Lat" />
-                  <TableColumn id="longColumn" fx:id="longColumn" prefWidth="98.39996337890625" text="Long" />
-              </columns>
-               <VBox.margin>
-                  <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
-               </VBox.margin>
-            </TableView>
-         </children>
-      </VBox>
-   </children>
+                    <columns>
+                        <TableColumn fx:id="nameColumn" prefWidth="115.19998931884766" text="Name" />
+                        <TableColumn fx:id="addressColumn" prefWidth="143.20001220703125" text="Address" />
+                        <TableColumn id="idColumn" fx:id="idColumn" prefWidth="115.20001220703125" text="ID" />
+                        <TableColumn id="starsColumn" fx:id="starsColumn" prefWidth="98.39999389648438" text="Stars" />
+                        <TableColumn id="latColumn" fx:id="latColumn" prefWidth="119.99996948242188" text="Lat" />
+                        <TableColumn id="longColumn" fx:id="longColumn" prefWidth="98.39996337890625" text="Long" />
+                    </columns>
+                    <VBox.margin>
+                        <Insets bottom="4.0" left="4.0" right="4.0" top="4.0" />
+                    </VBox.margin>
+                </TableView>
+            </children>
+        </VBox>
+    </children>
 </AnchorPane>
-

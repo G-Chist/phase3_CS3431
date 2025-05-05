@@ -40,6 +40,7 @@ public class YelpController {
     @FXML private TableColumn<Business, String> latitudeColumn;
     @FXML private TableColumn<Business, String> longitudeColumn;
 
+
     @FXML void initialize() {
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
         addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
@@ -71,12 +72,12 @@ public class YelpController {
         filterButton.setOnAction(event->{updateCategories(stateComboBox.getSelectionModel().getSelectedItem(), cityComboBox.getSelectionModel().getSelectedItem());});
         searchButton.setOnAction(event->{searchBusinesses();});
         businessTable.setOnMouseClicked(event -> {
-           if (event.getClickCount() == 2) {
-               Business selected = businessTable.getSelectionModel().getSelectedItem();
-               if (selected != null) {
-                   loadBusinessPage(selected);
-               }
-           }
+            if (event.getClickCount() == 2) {
+                Business selected = businessTable.getSelectionModel().getSelectedItem();
+                if (selected != null) {
+                    loadBusinessPage(selected);
+                }
+            }
         });
     }
 
@@ -85,11 +86,18 @@ public class YelpController {
             FXMLLoader fxmlLoader = new FXMLLoader(YelpApplication.class.getResource("businessDetails.fxml"));
             Parent root = fxmlLoader.load();
             BusinessDetailsController controller = fxmlLoader.getController();
+            //attributesBusinessList.setItems(FXCollections.observableArrayList());
 
             ObservableList<Business> businesses = FXCollections.observableArrayList(
                     getSimilarBusinesses(selected)
             );
-            controller.initData(selected.getName(), businesses);
+            ObservableList<String> categories = FXCollections.observableArrayList(
+                    getDetailsCategories(selected)
+            );
+            ObservableList<String> attributes = FXCollections.observableArrayList(
+                    getDetailsAttributes(selected)
+            );
+            controller.initData(selected.getName(), businesses, categories, attributes);
 
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
@@ -217,6 +225,73 @@ public class YelpController {
 
 
         return res;
+    }
+
+    private List<String> getDetailsCategories(Business selected){
+        List<String> categories = new ArrayList<String>();
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+
+            // Now run the SELECT that returns data
+            String stateQuery = """
+            SELECT categoryname
+            FROM category
+            NATURAL JOIN business
+            WHERE business_id = '""";
+
+            stateQuery = stateQuery.concat(selected.getId());
+            stateQuery = stateQuery.concat("';");
+
+            System.out.println(stateQuery);
+
+
+            try (PreparedStatement ps = conn.prepareStatement(stateQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    categories.add(rs.getString("categoryname"));
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return categories;
+    }
+
+    private List<String> getDetailsAttributes(Business selected){
+        List<String> attributes = new ArrayList<String>();
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD)) {
+
+            // Now run the SELECT that returns data
+            String stateQuery = """
+            SELECT attribute_name
+            FROM attribute
+            NATURAL JOIN business
+            WHERE business_id = '""";
+            stateQuery = stateQuery.concat(selected.getId());
+            stateQuery = stateQuery.concat("';");
+
+            System.out.println(stateQuery);
+
+
+            try (PreparedStatement ps = conn.prepareStatement(stateQuery)) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    attributes.add(rs.getString("attribute_name"));
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+
+        return attributes;
     }
 
     private void searchBusinesses(){
