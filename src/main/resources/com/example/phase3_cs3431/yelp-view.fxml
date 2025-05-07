@@ -101,7 +101,7 @@
                               <Insets left="10.0" top="10.0" />
                            </HBox.margin>
                         </Label>
-                        <Label id="resultsFoundLabel" fx:id="resultsFoundLabel" text="results found">
+                        <Label id="resultsFoundLabel" fx:id="resultsFoundLabel" styleClass="subtitle-text" text="results found">
                            <HBox.margin>
                               <Insets top="10.0" />
                            </HBox.margin>
