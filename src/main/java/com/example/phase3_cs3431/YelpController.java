@@ -314,10 +314,10 @@ public class YelpController {
     """;
 
         for (int i = 0; i < attrs.size(); i++) {
-            attributeSubquery += "(A.attribute_name = '" + attrs.get(i) + "' AND A.attValue <> 'False') AND ";
+            attributeSubquery += "(A.attribute_name = '" + attrs.get(i) + "' AND A.attValue <> 'False') OR ";
         }
         if (!attrs.isEmpty()) {
-            attributeSubquery = attributeSubquery.substring(0, attributeSubquery.length() - 5); // remove last ' AND '
+            attributeSubquery = attributeSubquery.substring(0, attributeSubquery.length() - 4); // remove last ' OR '
         }
 
         if (!attrs.isEmpty()) {
