@@ -306,75 +306,67 @@ public class YelpController {
     private List<Business> queryBusinesses(String state, String city, List<String> categories, List<String> attrs) {
         List<Business> res = new ArrayList<>();
 
-        String attributeQuery = """
-                (SELECT *
-                FROM Attribute
-                WHERE 
+        // Build subquery to get businesses that match ALL attributes
+        String attributeSubquery = """
+        SELECT A.business_id
+        FROM Attribute A
+        WHERE 
+    """;
+
+        for (int i = 0; i < attrs.size(); i++) {
+            attributeSubquery += "(A.attribute_name = '" + attrs.get(i) + "' AND A.attValue <> 'False') AND ";
+        }
+        if (!attrs.isEmpty()) {
+            attributeSubquery = attributeSubquery.substring(0, attributeSubquery.length() - 5); // remove last ' AND '
+        }
+
+        if (!attrs.isEmpty()) {
+            attributeSubquery += " GROUP BY A.business_id HAVING COUNT(*) = " + attrs.size();
+        }
+
+        // Build subquery to get businesses that match ALL categories
+        String categorySubquery = """
+            SELECT C.business_id
+            FROM Category C
+            WHERE 
         """;
 
-        for (String attr : attrs) {
-            attributeQuery = attributeQuery.concat("(attribute_name = '");
-            attributeQuery = attributeQuery.concat(attr);
-            attributeQuery = attributeQuery.concat("' AND attValue <> 'False') OR ");
+        for (int i = 0; i < categories.size(); i++) {
+            categorySubquery += "C.categoryName = '" + categories.get(i) + "' OR ";
         }
-        attributeQuery = attributeQuery.concat(" FALSE)");
-        System.out.println(attributeQuery);
+        if (!categories.isEmpty()) {
+            categorySubquery = categorySubquery.substring(0, categorySubquery.length() - 4); // remove last ' OR '
+            categorySubquery += " GROUP BY C.business_id HAVING COUNT(*) = " + categories.size();
+        }
 
-        // Final results looks like the following:
-        /*
-        (SELECT *
-        FROM Attribute
-        WHERE
-        (attribute_name = 'Alcohol' AND attValue <> FALSE) OR
-        (attribute_name = 'BikeParking' AND attValue <> FALSE) OR
-        (attribute_name = 'BusinessAcceptsBitcoin' AND attValue <> FALSE) OR
-        (attribute_name = 'BusinessAcceptsCreditCards' AND attValue <> FALSE) OR
-        FALSE) -- A OR FALSE = A by definition
-         */
-
+        // Query assembling
         String businessQuery = """
-                SELECT DISTINCT
-                business.business_id,
-                business.name,
-                business.street_address,
-                business.city,
-                business.state,
-                business.zip_code,
-                business.latitude,
-                business.longitude,
-                business.starRating,
-                business.num_tip,
-                business.is_open
-            FROM business
-           """;
+        SELECT DISTINCT
+            B.business_id,
+            B.name,
+            B.street_address,
+            B.city,
+            B.state,
+            B.zip_code,
+            B.latitude,
+            B.longitude,
+            B.starRating,
+            B.num_tip,
+            B.is_open
+        FROM business B
+        WHERE B.state = ? AND B.city = ?
+    """;
 
-        businessQuery = businessQuery.concat(" NATURAL JOIN ");
-        businessQuery = businessQuery.concat(attributeQuery);
-
-        businessQuery = businessQuery.concat("WHERE business.state = ? AND business.city = ?");
-
-        // You can iterate over all selected categories as follows. You should add more conditions to your query dynamically.
-        businessQuery = businessQuery.concat(" AND business.business_id IN (SELECT C1.business_id FROM Category C1 WHERE ");
-        for (String cat : categories) {
-            businessQuery = businessQuery.concat("C1.categoryName = '");
-            businessQuery = businessQuery.concat(cat);
-            businessQuery = businessQuery.concat("' OR ");
+        if (!attrs.isEmpty()) {
+            businessQuery += " AND B.business_id IN (" + attributeSubquery + ")";
         }
-        businessQuery = businessQuery.concat(" FALSE)");
-        // Final results looks like the following:
-        /*
-            SELECT business_id, name, street_address, city, latitude, longitude, starRating, num_tip
-            FROM business
-            WHERE business.state = {State}
-            AND business_id IN (SELECT C1.business_id FROM Category C1 WHERE
-                C1.categoryName = {Category1} OR
-                C1.categoryName = {Category2} OR
-                ...
-                FALSE) -- A OR FALSE = A by definition
-         */
+        if (!categories.isEmpty()) {
+            businessQuery += " AND B.business_id IN (" + categorySubquery + ")";
+        }
 
-        businessQuery = businessQuery.concat(" ORDER BY name");
-        System.out.println(businessQuery);
+        businessQuery += " ORDER BY B.name";
+
+        System.out.println("Final Query:\n" + businessQuery);
 
         try {
             connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
@@ -383,10 +375,8 @@ public class YelpController {
         }
 
         try (PreparedStatement ps = connection.prepareStatement(businessQuery)) {
-            int count = 1;
-            ps.setString(count, state);
-            count++;
-            ps.setString(count, city);
+            ps.setString(1, state);
+            ps.setString(2, city);
             ResultSet rs = ps.executeQuery();
             int businessCounter = 0;
             while (rs.next()) {
@@ -405,17 +395,20 @@ public class YelpController {
                 ));
                 businessCounter++;
             }
-
             resultsFoundLabel.setText(businessCounter + " results found");
-
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
 
-        try { connection.close(); } catch (SQLException e) { e.printStackTrace(); }
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         return res;
     }
+
 
 
 
